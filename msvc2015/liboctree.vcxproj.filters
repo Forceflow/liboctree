@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Node.h">
+    <ClInclude Include="..\include\octree_io.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\octree_io.h">
+    <ClInclude Include="..\include\OctreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
