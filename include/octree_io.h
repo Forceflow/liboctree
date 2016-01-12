@@ -1,24 +1,25 @@
 #ifndef OCTREE_IO_H_
 #define OCTREE_IO_H_
 
-#include <stdio.h>
+#include <cstdio>
 #include <tuple>
-#include <string>
+#include <cstring>
+#include <vector>
 #include <fstream>
-#include "../libs/libtri/include/file_tools.h"
-#include "Node.h"
+#include "OctreeNode.h"
 
 using namespace std;
 
-typedef tuple<string, unsigned int, unsigned int> field_descriptor;
+// Define types
+typedef tuple<string, unsigned int, unsigned int> field_descriptor; // descriptor of data field (name, starting byte, end byte)
 typedef char byte;
 
-// File containing all the octree IO methods
-
-// Internal format to represent an octree file and its associates
+// Internal format to interact with an octree file and its associates
 struct OctreeInfo {
 	int version;
+	bool valid;
 
+	// Base filename
 	string base_filename;
 	// associated files
 	fstream file_nodes;
@@ -35,12 +36,19 @@ struct OctreeInfo {
 	size_t size_data;
 	vector<field_descriptor> data_description;
 
-	// check if all files required exist
-	bool filesExist() const{
-		string header = base_filename + string(".octree");
-		string nodes = base_filename + string(".octreenodes");
-		string data = base_filename + string(".octreedata");
-		return (file_exists(header) && file_exists(nodes) && file_exists(data));
+	//// check if all files required exist
+	//bool filesExist() const{
+	//	string header = base_filename + string(".octree");
+	//	string nodes = base_filename + string(".octreenodes");
+	//	string data = base_filename + string(".octreedata");
+	//	return (file_exists(header) && file_exists(nodes) && file_exists(data));
+	//}
+
+	// read size_data bytes from data file
+	size_t readData(byte* data) {
+		size_t readpos = file_data.tellg();
+		file_data.read(data, size_data);
+		return readpos;
 	}
 
 	// Read size_data bytes from address and write to data file
@@ -52,6 +60,13 @@ struct OctreeInfo {
 		return writepos;
 	}
 
+	// read size_data bytes from data file
+	size_t readNode(byte* data) {
+		size_t readpos = file_data.tellg();
+		file_data.read(data, size_data);
+		return readpos;
+	}
+
 	// read size_node bytes from address and write to node file
 	// Returns position (bytes) where this was written.
 	size_t writeNode(const byte* node) {
@@ -61,12 +76,9 @@ struct OctreeInfo {
 		return writepos;
 	}
 
-	// read size_data bytes from data file
-	void readData(byte* data) {
-		size_t readpos = file_data.tellg();
-		file_data.read(data, size_data);
-		return readpos;
-	}
+
+
+
 };
 
 size_t writeVoxelData(FILE* f, const VoxelData &v, size_t &b_data_pos);
