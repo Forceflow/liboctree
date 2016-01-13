@@ -12,7 +12,6 @@ using namespace std;
 
 // Define types
 typedef tuple<string, unsigned int, unsigned int> field_descriptor; // descriptor of data field (name, starting byte, end byte)
-typedef char byte;
 
 // Internal format to interact with an octree file and its associates
 struct OctreeInfo {

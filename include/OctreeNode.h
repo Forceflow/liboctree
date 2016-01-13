@@ -3,26 +3,18 @@
 
 #include <cstring>
 
-#define NOCHILD -1
+#define NOCHILDREN 0
 #define NODATA 0
 
-
-// We only need 4 bits to depict child offsets, which range from 0-7
-
-// Byte which depicts no children in c1 and c2
-// 1111 1111
-// ^-c1 ^-c2
-#define NOCHILD_2 255
-
-// This is how an array of a leaf node will look
-const char LEAF[4] = {NOCHILD, NOCHILD, NOCHILD, NOCHILD};
+typedef unsigned char byte;
+static byte BYTE_MASK[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
 // An SVO node. Only contains child pointers, extend this if you want parent pointers as well
 class OctreeNode
 {
 public:
 	size_t children_base; // pointer to data
-	char children_offset[8];
+	byte children;
 
 	size_t data; // pointer first child
 
@@ -60,7 +52,7 @@ inline bool OctreeNode::isNull() const{
 
 // If this node doesn;t have any children, it's a leaf node
 inline bool OctreeNode::isLeaf() const{
-	if (memcmp(children_offset, LEAF, 8 * sizeof(char)) == 0){
+	if (children == NOCHILDREN){
 		return true;
 	}
 	return false;
