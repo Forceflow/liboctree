@@ -13,7 +13,7 @@ static byte BYTE_MASK[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 class OctreeNode
 {
 public:
-	size_t data;
+	size_t data; // pointer to data
 	size_t children_base; // pointer to first child
 	byte children;
 
