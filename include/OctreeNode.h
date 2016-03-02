@@ -28,7 +28,7 @@ class OctreeNode
 public:
 	size_t data; // data location
 	size_t children_base; // child location
-	byte children; // a byte indicating which children have links
+	byte children; // a byte indicating which children exist
 
 	OctreeNode();
 	bool hasChild(int_fast8_t i) const;

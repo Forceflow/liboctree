@@ -35,18 +35,10 @@ struct OctreeInfo {
 	size_t size_data;
 	vector<field_descriptor> data_description;
 
-	//// check if all files required exist
-	//bool filesExist() const{
-	//	string header = base_filename + string(".octree");
-	//	string nodes = base_filename + string(".octreenodes");
-	//	string data = base_filename + string(".octreedata");
-	//	return (file_exists(header) && file_exists(nodes) && file_exists(data));
-	//}
-
 	// read size_data bytes from data file
 	size_t readData(byte* data) {
 		size_t readpos = file_data.tellg();
-		file_data.read(data, size_data);
+		file_data.read((char*) data, size_data);
 		return readpos;
 	}
 
@@ -55,11 +47,11 @@ struct OctreeInfo {
 	size_t writeData(const byte* data) {
 		file_data.seekg(file_data.end);
 		size_t writepos = file_data.tellp();
-		file_data.write(data, size_data);
+		file_data.write((char*) data, size_data);
 		return writepos;
 	}
 
-	// read size_data bytes from data file
+	// read size_node bytes from data file
 	size_t readNode(byte* data) {
 		size_t readpos = file_data.tellg();
 		file_data.read(data, size_data);
