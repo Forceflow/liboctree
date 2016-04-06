@@ -14,23 +14,24 @@ using namespace std;
 typedef tuple<string, unsigned int, unsigned int> field_descriptor; // descriptor of data field (name, starting byte, end byte)
 
 // Internal format to interact with an octree file and its associates
-struct OctreeInfo {
+struct OctreeFile {
 	int version;
 	bool valid;
 
 	// Base filename
 	string base_filename;
-	// associated files
+
+	// Associated filestreams
 	fstream file_nodes;
 	fstream file_data;
 	
 	size_t grid_length;
 
-	// nodes info
+	// Nodes info
 	size_t n_node;
 	size_t size_node;
 	
-	// data info
+	// Data info
 	size_t n_data;
 	size_t size_data;
 	vector<field_descriptor> data_description;
@@ -54,7 +55,7 @@ struct OctreeInfo {
 	// read size_node bytes from data file
 	size_t readNode(byte* data) {
 		size_t readpos = file_data.tellg();
-		file_data.read(data, size_data);
+		file_data.read((char*) data, size_data);
 		return readpos;
 	}
 
@@ -63,47 +64,14 @@ struct OctreeInfo {
 	size_t writeNode(const byte* node) {
 		file_nodes.seekg(file_nodes.end);
 		size_t writepos = file_nodes.tellp();
-		file_nodes.write(node, size_node);
+		file_nodes.write((char*) node, size_node);
 		return writepos;
 	}
 
+	OctreeFile(char* filepath) {
 
-
-
+	}
 };
-
-size_t writeVoxelData(FILE* f, const VoxelData &v, size_t &b_data_pos);
-void readVoxelData(FILE* f, VoxelData &v);
-size_t writeNode(FILE* node_out, const Node &n, size_t &b_node_pos);
-inline void readNode(FILE* f, Node &n);
-
-void writeOctreeHeader(const std::string &filename, const OctreeInfo &i);
-int parseOctreeHeader(const std::string &filename, OctreeInfo &i);
-
-// Write a data point to file
-inline size_t writeVoxelData(FILE* f, const VoxelData &v, size_t &b_data_pos){
-	fwrite(&v.morton, VOXELDATA_SIZE, 1, f);
-	b_data_pos++;
-	return b_data_pos-1;
-}
-
-// Read a data point from a file
-inline void readDataPoint(FILE* f, VoxelData &v){
-	v.morton = 0;
-	fread(&v.morton, VOXELDATA_SIZE, 1, f);
-}
-
-// Write an octree node to file
-inline size_t writeNode(FILE* node_out, const Node &n, size_t &b_node_pos){
-	fwrite(& n.data, sizeof(size_t), 3, node_out);
-	b_node_pos++;
-	return b_node_pos-1;
-}
-
-// Read a Node from a file
-inline void readNode(FILE* f, Node &n){
-	fread(& n.data, sizeof(size_t), 3, f);
-}
 
 // Write an octree header to a file
 inline void writeOctreeHeader(const std::string &filename, const OctreeInfo &i){
