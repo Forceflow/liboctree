@@ -11,7 +11,7 @@
 using namespace std;
 
 // Define types
-typedef tuple<string, unsigned int, unsigned int> field_descriptor; // descriptor of data field (name, starting byte, end byte)
+typedef tuple<string, unsigned int, unsigned int> data_descriptor; // descriptor of data field (name, starting byte, end byte)
 
 // Internal format to interact with an octree file and its associates
 struct OctreeFile {
@@ -28,7 +28,7 @@ struct OctreeFile {
 	// Data info
 	size_t data_count;
 	size_t data_size;
-	vector<field_descriptor> data_description;
+	vector<data_descriptor> data_descriptors;
 
 	// read size_data bytes from data file
 	size_t readData(byte* data) {
@@ -76,17 +76,28 @@ inline OctreeFile readOctreeFile(const string filename) {
 
 	// Check that this is an #octree file
 	headerfile >> word;
-	if (word.compare("#octree") != 0) { cout << "Error: first word reads [" << word.c_str() << "] instead of [#octree]" << endl; exit(1); }
+	if (word.compare("#octree") != 0) { cout << "Error: first word reads [" << word.c_str() << "] instead of #octree" << endl; exit(1); }
 
 	bool done = false;
 	while (headerfile.good() && !done) {
 		headerfile >> word;
-		if (word.compare("END") == 0) done = true; 
-		else if (word.compare("grid") == 0) { headerfile >> octreefile.grid[0] >> octreefile.grid[1] >> octreefile.grid[2]; }
+		if (word.compare("END") == 0) { done = true; }
 		else if (word.compare("node_count") == 0) { headerfile >> octreefile.node_count; }
 		else if (word.compare("node_size") == 0) { headerfile >> octreefile.node_size; }
 		else if (word.compare("data_count") == 0) { headerfile >> octreefile.data_count; }
 		else if (word.compare("data_size") == 0) { headerfile >> octreefile.data_size; }
+		else if (word.compare("grid") == 0) {
+			headerfile >> octreefile.grid[0];
+			headerfile >> octreefile.grid[1];
+			headerfile >> octreefile.grid[2];
+		}
+		else if (word.compare("data_descriptor") == 0) {
+			data_descriptor desc;
+			headerfile >> std::get<0>(desc);
+			headerfile >> std::get<1>(desc);
+			headerfile >> std::get<2>(desc);
+			octreefile.data_descriptors.push_back(desc);
+		}
 		else {
 			cout << "  unrecognized keyword [" << word << "], skipping" << endl;
 			char c; do { c = headerfile.get(); } while (headerfile.good() && (c != '\n'));
