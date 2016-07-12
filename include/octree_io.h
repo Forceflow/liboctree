@@ -17,26 +17,23 @@ typedef tuple<string, unsigned int, unsigned int> field_descriptor; // descripto
 struct OctreeFile {
 	// Base filename
 	string base_filename;
-
 	// Associated filestreams
-	fstream file_nodes;
+	fstream file_node;
 	fstream file_data;
-	
-	size_t grid_length;
-
+	// Grid dimensions
+	float grid[3];
 	// Nodes info
-	size_t n_node;
-	size_t size_node;
-	
+	size_t node_count;
+	size_t node_size;
 	// Data info
-	size_t n_data;
-	size_t size_data;
+	size_t data_count;
+	size_t data_size;
 	vector<field_descriptor> data_description;
 
 	// read size_data bytes from data file
 	size_t readData(byte* data) {
 		size_t readpos = file_data.tellg();
-		file_data.read((char*) data, size_data);
+		file_data.read((char*) data, data_size);
 		return readpos;
 	}
 
@@ -45,54 +42,56 @@ struct OctreeFile {
 	size_t writeData(const byte* data) {
 		file_data.seekg(file_data.end);
 		size_t writepos = file_data.tellp();
-		file_data.write((char*) data, size_data);
+		file_data.write((char*) data, data_size);
 		return writepos;
 	}
 
 	// read size_node bytes from data file
 	size_t readNode(byte* data) {
-		size_t readpos = file_data.tellg();
-		file_data.read((char*) data, size_data);
+		size_t readpos = file_node.tellg();
+		file_node.read((char*) data, node_size);
 		return readpos;
 	}
 
 	// read size_node bytes from address and write to node file
 	// Returns position (bytes) where this was written.
 	size_t writeNode(const byte* node) {
-		file_nodes.seekg(file_nodes.end);
-		size_t writepos = file_nodes.tellp();
-		file_nodes.write((char*) node, size_node);
+		file_node.seekg(file_node.end);
+		size_t writepos = file_node.tellp();
+		file_node.write((char*) node, node_size);
 		return writepos;
 	}
 };
 
 inline OctreeFile readOctreeFile(const string filename) {
-	std::cout << "  reading octree header from " << filename.c_str() << " ... " << endl;
+	// Open header
+	std::cout << "Reading octree header from " << filename.c_str() << " ... " << endl;
 	ifstream headerfile;
 	headerfile.open(filename.c_str());
+	std::string word;
 
+	// Start building OctreeFile struct
 	OctreeFile octreefile;
 	octreefile.base_filename = filename.substr(0, filename.find_last_of("."));
 
-	std::string line; 
+	// Check that this is an #octree file
+	headerfile >> word;
+	if (word.compare("#octree") != 0) { cout << "Error: first word reads [" << word.c_str() << "] instead of [#octree]" << endl; exit(1); }
+
 	bool done = false;
-
-	headerfile >> line;
-	if (line.compare("#octree") != 0) { cout << "    Error: first line reads [" << line.c_str() << "] instead of [#octree]" << endl; exit(1); }
-	octreefile.version = (headerfile.get());
-
-
-	//while (headerfile.good() && !done) {
-	//	headerfile >> line;
-	//	if (line.compare("END") == 0) done = true; // when we encounter data keyword, we're at the end of the ASCII header
-	//	else if (line.compare("gridlength") == 0) { headerfile >> i.gridlength; }
-	//	else if (line.compare("n_nodes") == 0) { headerfile >> i.n_nodes; }
-	//	else if (line.compare("n_data") == 0) { headerfile >> i.n_data; }
-	//	else {
-	//		cout << "  unrecognized keyword [" << line << "], skipping" << endl;
-	//		char c; do { c = headerfile.get(); } while (headerfile.good() && (c != '\n'));
-	//	}
-	//}
+	while (headerfile.good() && !done) {
+		headerfile >> word;
+		if (word.compare("END") == 0) done = true; 
+		else if (word.compare("grid") == 0) { headerfile >> octreefile.grid[0] >> octreefile.grid[1] >> octreefile.grid[2]; }
+		else if (word.compare("node_count") == 0) { headerfile >> octreefile.node_count; }
+		else if (word.compare("node_size") == 0) { headerfile >> octreefile.node_size; }
+		else if (word.compare("data_count") == 0) { headerfile >> octreefile.data_count; }
+		else if (word.compare("data_size") == 0) { headerfile >> octreefile.data_size; }
+		else {
+			cout << "  unrecognized keyword [" << word << "], skipping" << endl;
+			char c; do { c = headerfile.get(); } while (headerfile.good() && (c != '\n'));
+		}
+	}
 }
 
 //// Write an octree header to a file
