@@ -2,7 +2,6 @@
 #define OCTREE_IO_H_
 
 #include <iostream>
-#include <tuple>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -10,8 +9,13 @@
 
 using namespace std;
 
-// Define types
-typedef tuple<string, unsigned int, unsigned int> data_descriptor; // descriptor of data field (name, starting byte, end byte)
+struct data_descriptor {
+	// Base filename
+	string name;
+	// Associated filestreams
+	unsigned int start_byte;
+	unsigned int end_byte;
+};
 
 // Internal format to interact with an octree file and its associates
 struct OctreeFile {
@@ -93,9 +97,9 @@ inline OctreeFile readOctreeFile(const string filename) {
 		}
 		else if (word.compare("data_descriptor") == 0) {
 			data_descriptor desc;
-			headerfile >> std::get<0>(desc);
-			headerfile >> std::get<1>(desc);
-			headerfile >> std::get<2>(desc);
+			headerfile >> desc.name;
+			headerfile >> desc.start_byte;
+			headerfile >> desc.end_byte;
 			octreefile.data_descriptors.push_back(desc);
 		}
 		else {
