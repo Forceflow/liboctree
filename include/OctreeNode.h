@@ -43,28 +43,23 @@ inline OctreeNode::OctreeNode() : data(0), children_base(0), children(0) {
 }
 
 // Check if this Node has a child at position i
-inline bool OctreeNode::hasChild(int_fast8_t i) const{
+inline bool OctreeNode::hasChild(int_fast8_t i) const {
 	return children & CHILD_CHECK_MASK[i];
 }
 
 // Get the full index of the child at position i
-inline size_t OctreeNode::getChildPos(int_fast8_t i) const{
+inline size_t OctreeNode::getChildPos(int_fast8_t i) const {
 	return !hasChild(i) ? 0 : children_base + CHILD_BITS_SET[children & CHILD_COUNT_MASK[i]] - 1;
 }
 
-// If this node doesn;t have any children, it's a leaf node
-inline bool OctreeNode::isLeaf() const{
+// If this node doesn't have any children, it's a leaf node
+inline bool OctreeNode::isLeaf() const {
 	return (children == NOCHILDREN);
 }
 
 // If the data pointer is NODATA, there is no data
-inline bool OctreeNode::hasData() const{
+inline bool OctreeNode::hasData() const {
 	return !(data == NODATA);
-}
-
-// If this node doesn't have data and is a leaf node, it's a null node
-inline bool OctreeNode::isNull() const {
-	return isLeaf() && !hasData();
 }
 
 #endif /* OCTREENODE_H_ */

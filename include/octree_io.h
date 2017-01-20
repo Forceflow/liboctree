@@ -25,20 +25,28 @@ struct OctreeFile {
 	fstream file_node;
 	fstream file_data;
 	// Grid dimensions
-	float grid[3];
+	unsigned int grid[3];
 	// Nodes info
 	size_t node_count;
 	size_t node_size;
 	// Data info
 	size_t data_count;
 	size_t data_size;
+	// Data descriptors
 	vector<data_descriptor> data_descriptors;
 
-	// read size_data bytes from data file
+	// Read size_data bytes from data file
 	size_t readData(byte* data) {
 		size_t readpos = file_data.tellg();
 		file_data.read((char*) data, data_size);
 		return readpos;
+	}
+
+	// Read size_data bytes from data file at position
+	size_t readData(byte* data, size_t position) {
+		file_data.seekg(position);
+		file_data.read((char*)data, data_size);
+		return position;
 	}
 
 	// Read size_data bytes from address and write to data file
@@ -50,14 +58,14 @@ struct OctreeFile {
 		return writepos;
 	}
 
-	// read size_node bytes from data file
+	// Read size_node bytes from data file
 	size_t readNode(byte* data) {
 		size_t readpos = file_node.tellg();
 		file_node.read((char*) data, node_size);
 		return readpos;
 	}
 
-	// read size_node bytes from address and write to node file
+	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
 	size_t writeNode(const byte* node) {
 		file_node.seekg(file_node.end);
