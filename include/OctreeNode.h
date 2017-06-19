@@ -1,5 +1,4 @@
-#ifndef OCTREENODE_H_
-#define OCTREENODE_H_
+#pragma once
 
 #include <cstring>
 #include <cstdint>
@@ -62,4 +61,7 @@ inline bool OctreeNode::hasData() const {
 	return !(data == NODATA);
 }
 
-#endif /* OCTREENODE_H_ */
+// If this node doesn't have data and is a leaf node, it's a null node
+inline bool OctreeNode::isNull() const {
+	return isLeaf() && !hasData();
+}

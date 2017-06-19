@@ -1,5 +1,4 @@
-#ifndef OCTREE_IO_H_
-#define OCTREE_IO_H_
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -49,20 +48,21 @@ struct OctreeFile {
 		return position;
 	}
 
+	// Read size_node bytes from data file
+	size_t readNode(byte* data) {
+		size_t readpos = file_node.tellg();
+		file_node.read((char*)data, node_size);
+		return readpos;
+	}
+
 	// Read size_data bytes from address and write to data file
 	// Returns position (bytes) where this was written.
 	size_t writeData(const byte* data) {
 		file_data.seekg(file_data.end);
 		size_t writepos = file_data.tellp();
 		file_data.write((char*) data, data_size);
+		data_count++;
 		return writepos;
-	}
-
-	// Read size_node bytes from data file
-	size_t readNode(byte* data) {
-		size_t readpos = file_node.tellg();
-		file_node.read((char*) data, node_size);
-		return readpos;
 	}
 
 	// Write size_node bytes to node file
@@ -71,6 +71,7 @@ struct OctreeFile {
 		file_node.seekg(file_node.end);
 		size_t writepos = file_node.tellp();
 		file_node.write((char*) node, node_size);
+		node_count++;
 		return writepos;
 	}
 };
@@ -155,5 +156,3 @@ inline OctreeFile readOctreeFile(const string filename) {
 //	headerfile.close();
 //	return 1;
 //}
-
-#endif
