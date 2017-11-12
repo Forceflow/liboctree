@@ -48,7 +48,7 @@ struct OctreeFile {
 		return position;
 	}
 
-	// Read size_node bytes from data file
+	// Read size_node bytes from node file
 	size_t readNode(byte* data) {
 		size_t readpos = file_node.tellg();
 		file_node.read((char*)data, node_size);
@@ -67,10 +67,16 @@ struct OctreeFile {
 
 	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
-	size_t writeNode(const byte* node) {
+	size_t writeNode(const OctreeNode& node) {
+		// Go to end of file
 		file_node.seekg(file_node.end);
 		size_t writepos = file_node.tellp();
-		file_node.write((char*) node, node_size);
+		// Write Node data 
+		// TODO: Can probably do this in one write
+		file_node.write((char*) &(node.childmask), sizeof(node.childmask));
+		file_node.write((char*) &(node.children_base), sizeof(node.children_base));
+		file_node.write((char*) &(node.data), sizeof(node.data));
+		// Cleanup
 		node_count++;
 		return writepos;
 	}

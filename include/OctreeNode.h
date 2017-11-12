@@ -25,9 +25,9 @@ static const byte CHILD_BITS_SET[256] =
 class OctreeNode
 {
 public:
-	size_t data; // data location
+	byte childmask; // a byte indicating which children exist
 	size_t children_base; // child location
-	byte children; // a byte indicating which children exist
+	size_t data; // data location
 
 	OctreeNode();
 	bool hasChild(int_fast8_t i) const;
@@ -38,22 +38,22 @@ public:
 };
 
 // Default constructor
-inline OctreeNode::OctreeNode() : data(0), children_base(0), children(0) {
+inline OctreeNode::OctreeNode() : data(0), children_base(0), childmask(0) {
 }
 
 // Check if this Node has a child at position i
 inline bool OctreeNode::hasChild(int_fast8_t i) const {
-	return children & CHILD_CHECK_MASK[i];
+	return childmask & CHILD_CHECK_MASK[i];
 }
 
 // Get the full index of the child at position i
 inline size_t OctreeNode::getChildPos(int_fast8_t i) const {
-	return !hasChild(i) ? 0 : children_base + CHILD_BITS_SET[children & CHILD_COUNT_MASK[i]] - 1;
+	return !hasChild(i) ? 0 : children_base + CHILD_BITS_SET[childmask & CHILD_COUNT_MASK[i]] - 1;
 }
 
 // If this node doesn't have any children, it's a leaf node
 inline bool OctreeNode::isLeaf() const {
-	return (children == NOCHILDREN);
+	return (childmask == NOCHILDREN);
 }
 
 // If the data pointer is NODATA, there is no data
