@@ -57,7 +57,7 @@ struct OctreeFile {
 
 	// Read size_data bytes from address and write to data file
 	// Returns position (bytes) where this was written.
-	size_t writeData(const byte* data) {
+	size_t appendData(const byte* data) {
 		// Go to end of file
 		file_data.seekg(file_data.end);
 		size_t writepos = file_data.tellp();
@@ -70,7 +70,7 @@ struct OctreeFile {
 
 	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
-	size_t writeNode(const OctreeNode& node) {
+	size_t appendNode(const OctreeNode& node) {
 		// Go to end of file
 		file_node.seekg(file_node.end);
 		size_t writepos = file_node.tellp();
