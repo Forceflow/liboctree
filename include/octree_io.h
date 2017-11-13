@@ -16,6 +16,8 @@ struct data_descriptor {
 	unsigned int end_byte;
 };
 
+// ENUM FOR STATE? (EMPTY / FILLED)
+
 // Internal format to interact with an octree file and its associates
 struct OctreeFile {
 	// Base filename
