@@ -108,6 +108,12 @@ struct OctreeFile {
 
 
 	}
+
+	inline void flushFilestreams() {
+
+	}
+
+	// destructor shoul do this as well
 };
 
 inline OctreeFile readOctreeHeader(const string filename) {
