@@ -20,7 +20,7 @@ struct data_descriptor {
 struct OctreeFile {
 	// Base filename
 	string base_filename;
-	// Associated filestreams
+	// Associated filestreams (C++ version)
 	fstream file_node;
 	fstream file_data;
 	// Grid dimensions
@@ -35,29 +35,35 @@ struct OctreeFile {
 	vector<data_descriptor> data_descriptors;
 
 	// Read size_data bytes from data file
-	size_t readData(byte* data) {
+	inline size_t readData(byte* data){
 		size_t readpos = file_data.tellg();
 		file_data.read((char*) data, data_size);
 		return readpos;
 	}
 
 	// Read size_data bytes from data file at position
-	size_t readData(byte* data, size_t position) {
+	inline size_t readData(byte* data, size_t position) {
 		file_data.seekg(position);
 		file_data.read((char*)data, data_size);
 		return position;
 	}
 
 	// Read size_node bytes from node file
-	size_t readNode(byte* data) {
+	inline size_t readNode(byte* data) {
 		size_t readpos = file_node.tellg();
 		file_node.read((char*)data, node_size);
 		return readpos;
+
+		//TODO: zoals hier: 
+		//FILE* file = fopen(filename.c_str(), "rb");
+		//nodes.reserve(octree_info.n_nodes);
+		//for (size_t i = 0; i< octree_info.n_nodes; i++) {
+		//	Node n = Node();
 	}
 
 	// Read size_data bytes from address and write to data file
 	// Returns position (bytes) where this was written.
-	size_t appendData(const byte* data) {
+	inline size_t appendData(const byte* data) {
 		// Go to end of file
 		file_data.seekg(file_data.end);
 		size_t writepos = file_data.tellp();
@@ -70,7 +76,7 @@ struct OctreeFile {
 
 	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
-	size_t appendNode(const OctreeNode& node) {
+	inline size_t appendNode(const OctreeNode& node) {
 		// Go to end of file
 		file_node.seekg(file_node.end);
 		size_t writepos = file_node.tellp();
@@ -82,6 +88,25 @@ struct OctreeFile {
 		// Cleanup
 		node_count++;
 		return writepos;
+	}
+
+	// read data from octree header
+	inline void readHeader() {
+
+	}
+
+	// delete original header file write again
+	inline void writeHeader() {
+
+	}
+
+	inline void openFilestreams() {
+		string filename = base_filename + ".octreenodes";
+		file_node.open(filename.c_str(), ios::in | ios::out | ios::binary);
+		filename = base_filename + ".octreedata";
+		file_data.open(filename.c_str(), ios::in | ios::out | ios::binary);
+
+
 	}
 };
 
