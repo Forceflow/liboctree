@@ -58,9 +58,12 @@ struct OctreeFile {
 	// Read size_data bytes from address and write to data file
 	// Returns position (bytes) where this was written.
 	size_t writeData(const byte* data) {
+		// Go to end of file
 		file_data.seekg(file_data.end);
 		size_t writepos = file_data.tellp();
+		// Write data
 		file_data.write((char*) data, data_size);
+		// Cleanup
 		data_count++;
 		return writepos;
 	}
@@ -82,7 +85,7 @@ struct OctreeFile {
 	}
 };
 
-inline OctreeFile readOctreeFile(const string filename) {
+inline OctreeFile readOctreeHeader(const string filename) {
 	// Open header
 	std::cout << "Reading octree header from " << filename.c_str() << " ... " << endl;
 	ifstream headerfile;
