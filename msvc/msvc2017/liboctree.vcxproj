@@ -118,6 +118,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\OctreeFile.h" />
     <ClInclude Include="..\..\include\OctreeNode.h" />
     <ClInclude Include="..\..\include\octree_io.h" />
   </ItemGroup>

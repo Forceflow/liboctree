@@ -3,10 +3,10 @@
 #include <cstring>
 #include <cstdint>
 
+typedef uint8_t byte;
+
 #define NOCHILDREN 0
 #define NODATA 0
-
-typedef unsigned char byte;
 
 // Pre-computed masks for checking specific bit
 static const byte CHILD_CHECK_MASK[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
@@ -26,12 +26,12 @@ class OctreeNode
 {
 public:
 	byte childmask; // a byte indicating which children exist
-	size_t children_base; // child location
-	size_t data; // data location
+	uint32_t children_base; // child location
+	uint32_t data; // data location
 
 	OctreeNode();
 	bool hasChild(int_fast8_t i) const;
-	size_t getChildPos(int_fast8_t i) const;
+	uint32_t getChildPos(int_fast8_t i) const;
 	bool isLeaf() const;
 	bool hasData() const;
 	bool isNull() const;
@@ -47,7 +47,7 @@ inline bool OctreeNode::hasChild(int_fast8_t i) const {
 }
 
 // Get the full index of the child at position i
-inline size_t OctreeNode::getChildPos(int_fast8_t i) const {
+inline uint32_t OctreeNode::getChildPos(int_fast8_t i) const {
 	return !hasChild(i) ? 0 : children_base + CHILD_BITS_SET[childmask & CHILD_COUNT_MASK[i]] - 1;
 }
 
