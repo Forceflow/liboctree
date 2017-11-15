@@ -37,7 +37,7 @@ public:
 	size_t data_count;
 	size_t data_size;
 	// Data descriptors
-	vector<data_descriptor> data_descriptors;
+	vector<OctreeDataDescriptor> data_descriptors;
 
 	// Read size_data bytes from data file
 	inline size_t readData(byte* data) {
