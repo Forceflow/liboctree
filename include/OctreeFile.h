@@ -54,16 +54,10 @@ public:
 	}
 
 	// Read size_node bytes from node file
-	inline size_t readNode(byte* data) {
+	inline size_t readNode(OctreeNode& node) {
 		size_t readpos = file_node.tellg();
-		file_node.read((char*)data, node_size);
+		file_node.read((char*) &(node.childmask), sizeof(node.childmask) + sizeof(node.children_base) + sizeof(node.data));
 		return readpos;
-
-		//TODO: zoals hier: 
-		//FILE* file = fopen(filename.c_str(), "rb");
-		//nodes.reserve(octree_info.n_nodes);
-		//for (size_t i = 0; i< octree_info.n_nodes; i++) {
-		//	Node n = Node();
 	}
 
 	// Read size_data bytes from address and write to data file
