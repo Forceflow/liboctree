@@ -5,5 +5,5 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	readOctreeFile("D:/test.octree");
+//	readOctreeFile("D:/test.octree");
 }

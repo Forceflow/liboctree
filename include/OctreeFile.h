@@ -94,7 +94,7 @@ public:
 
 	}
 
-	// delete original header file write again
+	// delete original header file write again (TIP: use truncate)
 	inline void writeHeader() {
 
 	}
