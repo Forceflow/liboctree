@@ -35,6 +35,7 @@ public:
 	bool isLeaf() const;
 	bool hasData() const;
 	bool isNull() const;
+	static size_t getSize();
 };
 
 // Default constructor
@@ -64,4 +65,9 @@ inline bool OctreeNode::hasData() const {
 // If this node doesn't have data and is a leaf node, it's a null node
 inline bool OctreeNode::isNull() const {
 	return isLeaf() && !hasData();
+}
+
+// Function to return the actual size of the OctreeNode data members (some compilers might pad, we only want actual bytes)
+inline size_t OctreeNode::getSize() {
+	return sizeof(childmask) + sizeof(children_base) + sizeof(data);
 }
