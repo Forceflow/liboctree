@@ -5,6 +5,6 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	OctreeFile c("D:/test.octree", true);
+	OctreeFile c(string("D:/test.octree"), true);
 	c.readHeader();
 }
