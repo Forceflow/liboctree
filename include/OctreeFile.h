@@ -31,8 +31,8 @@ public:
 	std::vector<OctreeDataDescriptor> data_descriptors;
 
 	// constructor
-	inline OctreeFile::OctreeFile(std::string file_location, bool creation) {
-		base_filename = file_location.substr(0, file_location.find_last_of("."));
+	inline OctreeFile::OctreeFile(std::string file_location, bool creation) : 
+	base_filename(file_location.substr(0, file_location.find_last_of("."))), node_count(0), data_count(0), data_size(0) {
 		openFilestreams();
 	}
 
