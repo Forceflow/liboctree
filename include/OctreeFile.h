@@ -64,23 +64,23 @@ public:
 	}
 
 	// Read size_node bytes from node file, returns current read position
-	inline size_t OctreeFile::readNode(OctreeNode& node) {
+	inline size_t OctreeFile::readNode(OctreeNode* node) {
 		size_t readpos = file_node.tellg();
-		file_node.read((char*) &(node.childmask), OctreeNode::getSize());
+		file_node.read((char*) &(node->childmask), OctreeNode::getSize());
 		return readpos;
 	}
 
 	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
-	inline size_t OctreeFile::appendNode(const OctreeNode& node) {
+	inline size_t OctreeFile::appendNode(const OctreeNode* node) {
 		// Go to end of file
 		file_node.seekg(file_node.end);
 		size_t writepos = file_node.tellp();
 		// Write Node data 
 		// TODO: Can probably do this in one write
-		file_node.write((char*) &(node.childmask), sizeof(node.childmask));
-		file_node.write((char*) &(node.children_base), sizeof(node.children_base));
-		file_node.write((char*) &(node.data), sizeof(node.data));
+		file_node.write((char*) &(node->childmask), sizeof(node->childmask));
+		file_node.write((char*) &(node->children_base), sizeof(node->children_base));
+		file_node.write((char*) &(node->data), sizeof(node->data));
 		// Cleanup
 		node_count++;
 		return writepos;
