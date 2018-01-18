@@ -36,7 +36,7 @@ public:
 		openFilestreams();
 	}
 
-	// Read size_data bytes from data file, returns current read position
+	// Read size_data bytes from data file, returns position was just read
 	inline size_t OctreeFile::readData(byte* data) {
 		size_t readpos = file_data.tellg();
 		file_data.read((char*)data, data_size);
@@ -44,7 +44,7 @@ public:
 	}
 
 	// Read size_data bytes from data file at position
-	inline void OctreeFile::readData(byte* data, size_t position) {
+	inline void OctreeFile::readData(byte* data, const size_t position) {
 		file_data.seekg(position);
 		file_data.read((char*)data, data_size);
 		return;
@@ -63,12 +63,32 @@ public:
 		return writepos;
 	}
 
-	// Read size_node bytes from node file, returns current read position
+	//// Read size_data bytes from address and write to data file at position
+	//inline size_t OctreeFile::appendData(const byte* data, s) {
+	//	// Go to end of file
+	//	file_data.seekg(file_data.end);
+	//	size_t writepos = file_data.tellp();
+	//	// Write data
+	//	file_data.write((char*)data, data_size);
+	//	// Cleanup
+	//	data_count++;
+	//	return writepos;
+	//}
+
+	// Read size_node bytes from node file, returns position that was just read
 	inline size_t OctreeFile::readNode(OctreeNode* node) {
 		size_t readpos = file_node.tellg();
 		file_node.read((char*) &(node->childmask), OctreeNode::getSize());
 		return readpos;
 	}
+
+	// Read size_node bytes from node file, at position
+	inline void OctreeFile::readNode(OctreeNode* node, const size_t position) {
+		file_node.seekg(position);
+		file_node.read((char*) &(node->childmask), OctreeNode::getSize());
+		return;
+	}
+
 
 	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
