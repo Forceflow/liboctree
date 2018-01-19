@@ -89,7 +89,6 @@ public:
 		return;
 	}
 
-
 	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
 	inline size_t OctreeFile::appendNode(const OctreeNode* node) {
