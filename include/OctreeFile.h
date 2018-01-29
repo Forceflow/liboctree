@@ -164,7 +164,12 @@ public:
 		file_data.close();
 	}
 
-	// destructor shoul do this as well
+	// Flush and close file streams before this object goes out of scope
+	// Rest of the members (string/vector) will destruct themselves on object life end
+	inline void OctreeFile::~OctreeFile() {
+		flushFilestreams();
+		closeFilestreams();
+	}
 };
 
 //// Write an octree header to a file
