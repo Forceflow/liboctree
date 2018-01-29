@@ -6,8 +6,8 @@
 
 struct OctreeDataDescriptor {
 	// Base filename
-	std::string data_name;
+	std::string data_name = ""; // Yes, C++11 allows us to put default values here.
 	// Associated filestreams
-	unsigned int start_byte;
-	unsigned int end_byte;
+	unsigned int start_byte = 0;
+	unsigned int end_byte = 0;
 };
