@@ -9,8 +9,6 @@
 #include "OctreeNode.h"
 #include "OctreeDataDescriptor.h"
 
-// ENUM FOR STATE? (EMPTY / FILLED)
-
 // A class to interact with an Octree file and its various file streams
 class OctreeFile {
 public:
@@ -31,8 +29,8 @@ public:
 	std::vector<OctreeDataDescriptor> data_descriptors;
 
 	// constructor
-	inline OctreeFile::OctreeFile(std::string &file_location, bool creation) : 
-	base_filename(file_location.substr(0, file_location.find_last_of("."))), node_count(0), data_count(0), data_size(0), grid{0,0,0} {
+	inline OctreeFile::OctreeFile(std::string &file_location, bool creation) :
+		base_filename(file_location.substr(0, file_location.find_last_of("."))), node_count(0), data_count(0), data_size(0), grid{ 0,0,0 } {
 		openFilestreams();
 	}
 
@@ -75,13 +73,16 @@ public:
 		file_data.write((char*)data, data_size);
 	}
 
-	// Read size_node bytes from node file, returns position that was just read
+	// NODE READ
+	// Read size_node bytes from node file
+	// Returns position that was just read
 	inline size_t OctreeFile::readNode(OctreeNode* node) {
 		size_t readpos = file_node.tellg();
 		file_node.read((char*) &(node->childmask), OctreeNode::getSize());
 		return readpos;
 	}
 
+	// NODE READ TARGETED
 	// Read size_node bytes from node file, at position
 	inline void OctreeFile::readNode(OctreeNode* node, const size_t position) {
 		file_node.seekg(position);
@@ -89,14 +90,14 @@ public:
 		return;
 	}
 
+	// NODE WRITE
 	// Write size_node bytes to node file
 	// Returns position (bytes) where this was written.
 	inline size_t OctreeFile::appendNode(const OctreeNode* node) {
 		// Go to end of file
 		file_node.seekg(file_node.end);
 		size_t writepos = file_node.tellp();
-		// Write Node data 
-		// TODO: Can probably do this in one write
+		// Write Node data (TODO: Can probably do this in one write)
 		file_node.write((char*) &(node->childmask), sizeof(node->childmask));
 		file_node.write((char*) &(node->children_base), sizeof(node->children_base));
 		file_node.write((char*) &(node->data), sizeof(node->data));
@@ -105,7 +106,21 @@ public:
 		return writepos;
 	}
 
-	// read data from octree header
+	// NODE WRITE TARGETED
+	// Write size_node bytes to node file at specific position
+	inline void OctreeFile::writeNode(const OctreeNode* node, const size_t position) {
+		// Go to specific position
+		file_node.seekg(position);
+		// Write Node data (TODO: Can probably do this in one write)
+		file_node.write((char*) &(node->childmask), sizeof(node->childmask));
+		file_node.write((char*) &(node->children_base), sizeof(node->children_base));
+		file_node.write((char*) &(node->data), sizeof(node->data));
+		// Cleanup
+		node_count++;
+		return;
+	}
+
+	// READ DATA FROM OCTREE HEADER
 	inline bool OctreeFile::readHeader() {
 		std::string word;
 		// Check that this is an #octree file
@@ -138,18 +153,17 @@ public:
 		}
 	}
 
-	// delete original header file write again (TIP: use truncate)
-	inline void OctreeFile::writeHeader() {
+	//// WRITE OCTREE HEADER
+	//inline bool OctreeFile::writeHeader() {
+	//	file_header.close(); // close file header
+	//	std::string filename = base_filename + ".octree";
 
-	}
+	//}
 
 	inline void OctreeFile::openFilestreams() {
-		std::string filename = base_filename + ".octree";
-		file_header.open(filename.c_str(), std::ios::in | std::ios::out); // Text-based
-		filename = base_filename + ".octreenodes";
-		file_node.open(filename.c_str(), std::ios::in | std::ios::out | std::ios::binary); // Binary
-		filename = base_filename + ".octreedata";
-		file_data.open(filename.c_str(), std::ios::in | std::ios::out | std::ios::binary); // Binary
+		openFileStream(file_header, std::string(".octree"), std::ios::in | std::ios::out); // Text-based I/O
+		openFileStream(file_node, std::string(".octreenodes"), std::ios::in | std::ios::out | std::ios::binary); // Binary I/O
+		openFileStream(file_node, std::string(".octreedata"), std::ios::in | std::ios::out | std::ios::binary); // Binary I/O
 	}
 
 	inline void OctreeFile::flushFilestreams() {
@@ -169,6 +183,15 @@ public:
 	inline void OctreeFile::~OctreeFile() {
 		flushFilestreams();
 		closeFilestreams();
+	}
+
+private:
+	std::fstream openFileStream(std::fstream &stream, ::string &extension, ios::ios_base::openmode mode);
+
+	// Opening the different file streams
+	inline std::fstream openFileStream(std::fstream &stream, std::string &extension, ios::ios_base::openmode mode) {
+		std::string filename = base_filename + extension;
+		stream.open(filename.c_str(), mode);
 	}
 };
 
