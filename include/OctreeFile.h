@@ -9,6 +9,10 @@
 #include "OctreeNode.h"
 #include "OctreeDataDescriptor.h"
 
+const std::string OCTREE_FILE_HEADER_EXTENSION = ".octree";
+const std::string OCTREE_FILE_NODE_EXTENSION = ".octreenodes";
+const std::string OCTREE_FILE_DATA_EXTENSION = ".octreedata";
+
 // A class to interact with an Octree file and its various file streams
 class OctreeFile {
 public:
@@ -153,17 +157,17 @@ public:
 		}
 	}
 
-	//// WRITE OCTREE HEADER
-	//inline bool OctreeFile::writeHeader() {
-	//	file_header.close(); // close file header
-	//	std::string filename = base_filename + ".octree";
-
-	//}
+	// WRITE OCTREE HEADER
+	inline bool OctreeFile::writeHeader() {
+		openFileStream(file_header, OCTREE_FILE_HEADER_EXTENSION, std::ios::out | std::ios::trunc); // open file in trunc mode
+		file_header << "#octree" << std::endl;
+		// TODO: write rest of header
+	}
 
 	inline void OctreeFile::openFilestreams() {
-		openFileStream(file_header, std::string(".octree"), std::ios::in | std::ios::out); // Text-based I/O
-		openFileStream(file_node, std::string(".octreenodes"), std::ios::in | std::ios::out | std::ios::binary); // Binary I/O
-		openFileStream(file_node, std::string(".octreedata"), std::ios::in | std::ios::out | std::ios::binary); // Binary I/O
+		openFileStream(file_header, OCTREE_FILE_HEADER_EXTENSION, std::ios::in | std::ios::out); // Text-based I/O
+		openFileStream(file_node, OCTREE_FILE_NODE_EXTENSION, std::ios::in | std::ios::out | std::ios::binary); // Binary I/O
+		openFileStream(file_node, OCTREE_FILE_DATA_EXTENSION, std::ios::in | std::ios::out | std::ios::binary); // Binary I/O
 	}
 
 	inline void OctreeFile::flushFilestreams() {
@@ -186,10 +190,7 @@ public:
 	}
 
 private:
-	std::fstream openFileStream(std::fstream &stream, ::string &extension, ios::ios_base::openmode mode);
-
-	// Opening the different file streams
-	inline std::fstream openFileStream(std::fstream &stream, std::string &extension, ios::ios_base::openmode mode) {
+	inline std::fstream openFileStream(std::fstream &stream, const std::string &extension, std::ios::ios_base::openmode mode) {
 		std::string filename = base_filename + extension;
 		stream.open(filename.c_str(), mode);
 	}
