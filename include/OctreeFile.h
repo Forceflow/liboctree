@@ -129,14 +129,21 @@ namespace liboctree {
 		// READ DATA FROM OCTREE HEADER
 		inline bool OctreeFile::readHeader() {
 			std::string word;
+			std::string version;
 			// Check that this is an #octree file
 			file_header_ >> word;
-			if (word.compare("#octree") != 0) { std::cout << "Error: first word of .octree file reads [" << word.c_str() << "] instead of #octree" << std::endl; exit(1); }
+			if (word.compare("#OCTREE") != 0) {
+				outputProblem("Error: first word in file [" + word + "], expected #OCTREE"); exit(1);
+			}
+			else {
+				file_header_ >> version;
+				// TODO: Check if this parser is compatible with version
+			}
 			// Read header and save data
-			bool done = false;
-			while (file_header_.good() && !done) {
+			bool seen_end_flag = false;
+			while (file_header_.good() && !seen_end_flag) {
 				file_header_ >> word;
-				if (word.compare("END") == 0) { done = true; }
+				if (word.compare("#END") == 0) { seen_end_flag = true; } // we've reached the end of the file
 				else if (word.compare("node_count") == 0) { file_header_ >> this->node_count_; }
 				else if (word.compare("data_count") == 0) { file_header_ >> this->data_count_; }
 				else if (word.compare("data_size") == 0) { file_header_ >> this->data_size_; }
@@ -153,9 +160,12 @@ namespace liboctree {
 					this->data_descriptors_.push_back(desc);
 				}
 				else {
-					std::cout << "  unrecognized keyword [" << word << "], skipping" << std::endl;
+					outputProblem("Warning: Unrecognized keyword: " + word + ", ignoring line");
 					char c; do { c = file_header_.get(); } while (file_header_.good() && (c != '\n'));
 				}
+			}
+			if (!seen_end_flag) {
+				outputProblem("Warning: Reached end of file without seeing #END");
 			}
 			return true;
 		}
@@ -205,6 +215,10 @@ namespace liboctree {
 		inline void openFileStream(std::fstream &stream, const std::string &extension, std::ios::ios_base::openmode mode) {
 			std::string filename = base_filename_ + extension;
 			stream.open(filename.c_str(), mode);
+		}
+
+		inline void outputProblem(const std::string &problem) {
+			std::cout << "[LIBOCTREE] " << base_filename_ << ".octree - " << problem << std::endl;
 		}
 	};
 }
